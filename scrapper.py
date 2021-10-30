@@ -21,13 +21,14 @@ PRICE = PRICE[:size-3]
 message = '''\
 Subject: Trendyol Product Price Info
 
-Price of the product is {}
+Price of the product : {} TL
 
 Click here : {}
 
 '''.format(PRICE, PRODUCT_URL)
 
 password = input('Enter the password: ')
+
 mailsender.send('testautomationwithmaksu@gmail.com', password, message)
 
 driver.quit()
