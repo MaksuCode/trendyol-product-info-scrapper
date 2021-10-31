@@ -4,4 +4,4 @@
 
 * Sample mail :
 
-![img.png](img.png)
+![img.png](resource/img.png)
