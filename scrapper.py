@@ -1,34 +1,39 @@
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import mailsender
+import driver_manager
+import sys
+from product import Product
 
 BASE_URL = 'https://www.trendyol.com/'
-PRODUCT = 'apple/z0yj000y0-macbook-air-13-i3-1-1ghz-16gb-256gb-space-gray-ozel-konfig-p-81411508?boutiqueId=583864' \
-          '&merchantId=141868 '
+PRODUCT = 'apple/z0yj000y0-macbook-air-13-i3-1-1ghz-16gb-256gb-space-gray-ozel-konfig-p' \
+          '-81411508?boutiqueId=583864&merchantId=141868'  # sys.argv[1]
 PRODUCT_URL = BASE_URL + PRODUCT
 
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-driver.get(PRODUCT_URL)
+product = Product(PRODUCT_URL)
+driver = driver_manager.init_driver()
+driver.get(product.url)
 
-PRICE = driver.find_element(By.CSS_SELECTOR, 'div.product-price-container span.prc-dsc').text.replace(' TL', '')\
+PRICE = driver.find_element(By.CSS_SELECTOR, product.price_locator) \
+    .text.replace(' TL', '') \
     .replace('.', '')
 size = len(PRICE)
-PRICE = PRICE[:size-3]
+
+product.price = PRICE[:size - 3]
+product.name = driver.find_element(By.CSS_SELECTOR, product.name_locator).text
 
 message = '''\
 Subject: Trendyol Product Price Info
 
 Price of the product : {} TL
 
+Name of the product : {} 
+
 Click here : {}
 
-'''.format(PRICE, PRODUCT_URL)
+'''.format(product.price, product.name, product.url)
 
 password = input('Enter the password: ')
-
 mailsender.send('testautomationwithmaksu@gmail.com', password, message)
+print('Messge sent : {}'.format(message))
 
 driver.quit()
